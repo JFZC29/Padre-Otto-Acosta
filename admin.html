@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración · Padre Otto Acosta</title>
+  <meta name="theme-color" content="#D81B26" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="icon" type="image/png" href="imagenes/logo%202.png" />
+</head>
+<body class="admin-body">
+
+  <div id="adminToast" class="admin-toast" role="status" aria-live="polite"></div>
+  <div class="confirm-backdrop hidden" id="adminConfirm" aria-hidden="true">
+    <div class="confirm-card">
+      <p id="confirmBody" class="confirm-body"></p>
+      <div class="confirm-actions">
+        <button type="button" id="confirmCancel" class="btn btn-ghost btn-sm">Cancelar</button>
+        <button type="button" id="confirmOk" class="btn btn-danger btn-sm">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminDemoBanner" class="demo-banner hidden" role="alert"></div>
+
+  <!-- ===== DOS AUTH-DEMO: solo visible sin Firebase ===== -->
+  <nav class="admin-topbar" style="display:none" id="adminTopbar">
+    <a href="index.html" class="brand">
+      <span class="brand-logo" aria-hidden="true"><img src="imagenes/logo%202.png" alt="" width="46" height="46" /></span>
+      <span class="brand-text"><strong>Padre Otto Acosta</strong><small>Panel de administración</small></span>
+    </a>
+    <div class="admin-topbar-actions">
+      <span id="adminUser" class="admin-user"></span>
+      <button id="logoutBtn" class="btn btn-outline btn-sm" style="display:none">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- ===== LOGIN ===== -->
+  <section class="login-view" id="loginView">
+    <div class="login-card">
+      <span class="brand-logo login-logo" aria-hidden="true"><img src="imagenes/logo%202.png" alt="Logo de la institución" width="64" height="64" /></span>
+      <h1>Acceso de administración</h1>
+      <p class="login-sub">Inicia sesión para publicar y administrar el contenido del sitio.</p>
+
+      <div class="login-config-warn hidden" id="loginConfigWarn">
+        <strong>No has configurado Firebase.</strong>
+        <p>Abre <code>js/firebase-config.js</code> con tus credenciales de Firebase y, en <code>Aquí coloca TU_API_KEY</code>... Revisa el archivo <code>README.md</code> para los pasos completos.</p>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-field">
+          <label for="liMail">Correo electrónico</label>
+          <input type="email" id="liMail" placeholder="admin@tu-escuela.edu.ec" required autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <label for="liPass">Contraseña</label>
+          <input type="password" id="liPass" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <p id="loginError" class="form-status form-status-error" role="alert"></p>
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Entrar</button>
+      </form>
+
+      <p class="login-hint">¿No tienes acceso? Solicítalo al responsable del sitio / coordinación de Fe y Alegría.</p>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD ===== -->
+  <section class="dashboard-view hidden" id="dashboardView">
+    <div class="container">
+      <header class="dash-head">
+        <div>
+          <h1>Panel de administración</h1>
+          <p>Administra noticias y galería de fotografías del sitio.</p>
+        </div>
+        <a href="index.html" class="btn btn-outline btn-sm">Ver sitio →</a>
+      </header>
+
+      <nav class="dash-tabs">
+        <button class="dash-tab is-active" data-tab="noticias">Noticias</button>
+        <button class="dash-tab" data-tab="galeria">Galería</button>
+        <button class="dash-tab" data-tab="autoridades">Autoridades</button>
+        <button class="dash-tab" data-tab="contadores">Contadores</button>
+      </nav>
+
+      <!-- ===== TAB NOTICIAS ===== -->
+      <section class="tab-panel" id="tab-noticias">
+        <div class="editor-card">
+          <h2 id="newsFormTitle">Nueva publicación</h2>
+          <form id="newsForm">
+            <input type="hidden" id="nbNewsId" />
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="nbTituloEs">Título en español *</label>
+                <input type="text" id="nbTituloEs" required placeholder="Ej.: Festival de lectura 2026" />
+              </div>
+              <div class="form-field">
+                <label for="nbTituloEn">Título en inglés</label>
+                <input type="text" id="nbTituloEn" placeholder="Ej.: 2026 Reading Festival" />
+              </div>
+              <div class="form-field form-field-wide">
+                <label for="nbContenidoEs">Contenido en español *</label>
+                <textarea id="nbContenidoEs" rows="5" required placeholder="Redacta la noticia…"></textarea>
+              </div>
+              <div class="form-field form-field-wide">
+                <label for="nbContenidoEn">Contenido en inglés</label>
+                <textarea id="nbContenidoEn" rows="5" placeholder="Write the news article…"></textarea>
+              </div>
+              <div class="form-field">
+                <label for="nbCategoria">Categoría</label>
+                <select id="nbCategoria">
+                  <option value="academico">Académico</option>
+                  <option value="deportes">Deportes</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="comunidad">Comunidad</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="nbFechaLoc">Fecha del evento (opcional)</label>
+                <input type="date" id="nbFechaLoc" />
+              </div>
+              <div class="form-field form-field-wide">
+                <label for="nbImagen">Imagen de portada (opcional)</label>
+                <input type="file" id="nbImagen" accept="image/*" />
+                <p class="field-hint">JPG, PNG o WebP. Las fotos se comprimen automáticamente y se guardan en Firestore (no requiere Storage ni plan de pago).</p>
+                <div class="preview-row"><img id="nbPreview" class="file-preview hidden" alt="Vista previa" /></div>
+              </div>
+              <div class="form-field">
+                <label class="check-row">
+                  <input type="checkbox" id="nbDestacado" />
+                  <span>Marcar como destacada (aparece en el carrusel)</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="nbReset" class="btn btn-ghost btn-sm">Limpiar</button>
+              <button type="submit" class="btn btn-primary" id="nbSubmit">Publicar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h2>Publicaciones existentes</h2>
+          <div id="newsList" class="admin-list"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB GALERÍA ===== -->
+      <section class="tab-panel hidden" id="tab-galeria">
+        <div class="editor-card">
+          <h2>Subir fotografías</h2>
+          <form id="galleryForm">
+            <div class="form-grid">
+              <div class="form-field form-field-wide">
+                <label for="gbImagen">Imagen(es) *</label>
+                <input type="file" id="gbImagen" accept="image/*" multiple required />
+                <p class="field-hint">Puedes seleccionar varias fotos a la vez (JPG, PNG o WebP). Las fotos se comprimen y guardan en Firestore, sin necesidad de Storage ni tarjeta.</p>
+                <div class="gallery-preview" id="galleryPreview"></div>
+              </div>
+              <div class="form-field">
+                <label for="gbDescripcionEs">Descripción en español</label>
+                <input type="text" id="gbDescripcionEs" placeholder="Ej.: Paseo pedagógico al parque" />
+              </div>
+              <div class="form-field">
+                <label for="gbDescripcionEn">Description (EN)</label>
+                <input type="text" id="gbDescripcionEn" placeholder="E.g.: Outdoor class trip" />
+              </div>
+              <div class="form-field">
+                <label for="gbCategoria">Categoría</label>
+                <select id="gbCategoria">
+                  <option value="academico">Académico</option>
+                  <option value="deportes">Deportes</option>
+                  <option value="cultural">Cultural</option>
+                  <option value="comunidad">Comunidad</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="gbSubmit">Subir fotos</button>
+            </div>
+            <div id="galleryProgress" class="progress-track hidden">
+              <div class="progress-bar" id="galleryProgressBar"></div>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h2>Fotos en la galería</h2>
+          <p class="field-hint">Haz clic en la ✕ para eliminar la fotografía de la galería.</p>
+          <div id="galleryManager" class="gallery-manager"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB AUTORIDADES ===== -->
+      <section class="tab-panel hidden" id="tab-autoridades">
+        <div class="editor-card">
+          <h2 id="staffFormTitle">Agregar autoridad</h2>
+          <form id="staffForm">
+            <input type="hidden" id="stId" />
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="stNombre">Nombre *</label>
+                <input type="text" id="stNombre" required placeholder="Ej.: Lic. María Pérez" />
+              </div>
+              <div class="form-field">
+                <label for="stImg">Foto de perfil (opcional)</label>
+                <input type="file" id="stImg" accept="image/*" />
+                <p class="field-hint">Se comprime y guarda en Firestore (sin Storage ni tarjeta).</p>
+                <div class="preview-row"><img id="stPreview" class="file-preview hidden" alt="Vista previa" /></div>
+              </div>
+              <div class="form-field">
+                <label for="stRolEs">Cargo en español *</label>
+                <input type="text" id="stRolEs" required placeholder="Ej.: Directora" />
+              </div>
+              <div class="form-field">
+                <label for="stRolEn">Role (EN)</label>
+                <input type="text" id="stRolEn" placeholder="E.g.: Principal" />
+              </div>
+              <div class="form-field">
+                <label for="stExtraEs">Detalle en español</label>
+                <input type="text" id="stExtraEs" placeholder="Ej.: Subnivel Media" />
+              </div>
+              <div class="form-field">
+                <label for="stExtraEn">Detail (EN)</label>
+                <input type="text" id="stExtraEn" placeholder="E.g.: Middle School level" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="stReset" class="btn btn-ghost btn-sm">Limpiar</button>
+              <button type="submit" class="btn btn-primary" id="stSubmit">Guardar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h2>Autoridades y docentes</h2>
+          <p class="field-hint">Usa las flechas ↑ ↓ para ordenar cómo aparecerán en el sitio. ✕ elimina la persona.</p>
+          <div id="staffList" class="admin-list"></div>
+        </div>
+      </section>
+
+      <!-- ===== TAB CONTADORES ===== -->
+      <section class="tab-panel hidden" id="tab-contadores">
+        <div class="editor-card">
+          <h2>Contadores de bienvenida</h2>
+          <p class="field-hint">Estos números se muestran en la sección de bienvenida de la página de inicio. Actualízalos cuando cambien (matrícula, personal, etc.). El cambio se ve al instante en el sitio.</p>
+          <form id="countersForm">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="ct1">Estudiantes</label>
+                <input type="number" id="ct1" min="0" step="1" required placeholder="Ej.: 350" />
+              </div>
+              <div class="form-field">
+                <label for="ct2">Docentes y personal</label>
+                <input type="number" id="ct2" min="0" step="1" required placeholder="Ej.: 18" />
+              </div>
+              <div class="form-field">
+                <label for="ct3">Años de básica media</label>
+                <input type="number" id="ct3" min="0" step="1" required placeholder="Ej.: 7" />
+              </div>
+              <div class="form-field">
+                <label for="ct4">Niveles educativos</label>
+                <input type="number" id="ct4" min="0" step="1" required placeholder="Ej.: 3" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="ctSubmit">Guardar contadores</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Firebase SDKs (compat) + scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
