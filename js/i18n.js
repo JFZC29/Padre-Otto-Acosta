@@ -16,7 +16,7 @@ const FYA_I18N = {
 
   "hero.eyebrow": "Network of Popular Education Movements",
   "hero.title": "Padre Otto Acosta<br/>Basic Education School",
-  "hero.subtitle": "We educate children with quality, tenderness and social justice, together with Fe y Alegría Ecuador.",
+  "hero.subtitle": "“Fe y Alegría begins where the asphalt ends.” Where others see limits, we build opportunities.",
   "hero.ctaNews": "See news",
   "hero.ctaContact": "Contact us",
 
